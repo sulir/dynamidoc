@@ -59,9 +59,14 @@ public class Project {
 		}
 	}
 	
-	public void writeJavadoc() throws IOException {
+	public void writeJavadoc() {
 		for (SourceFile file : sourceFiles.values()) {
-			file.writeJavadoc();
+			try {
+				System.out.println("write " + file.getPath());
+				file.writeJavadoc();
+			} catch (IOException e) {
+				Logger.getGlobal().warning("Cannot write " + file.getPath());
+			}
 		}
 	}
 }

@@ -27,7 +27,7 @@ public class Trace {
 			project.addTraceEvents(events);
 			project.writeJavadoc();
 		} catch (Exception e) {
-			Logger.getGlobal().severe(e.getMessage());
+			Logger.getGlobal().severe(e.toString());
 		}
 	}
 }

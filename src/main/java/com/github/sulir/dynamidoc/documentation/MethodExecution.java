@@ -7,6 +7,7 @@ public class MethodExecution {
 	private final String[] argumentValues;
 	private String returnValue;
 	private String exception;
+	private int count = 1;
 	
 	public MethodExecution(Method method, String[] argumentValues) {
 		this.method = method;
@@ -35,6 +36,14 @@ public class MethodExecution {
 
 	public void setException(String exception) {
 		this.exception = exception;
+	}
+	
+	public int getCount() {
+		return count;
+	}
+
+	public void incrementCount() {
+		count++;
 	}
 	
 	public String generateDocumentation() {
@@ -81,19 +90,19 @@ public class MethodExecution {
 	}
 
 	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = prime + Arrays.hashCode(argumentValues);
-		result = prime * result + ((returnValue == null) ? 0 : returnValue.hashCode());
-		return result;
-	}
-
-	@Override
 	public boolean equals(Object object) {
 		if (!(object instanceof MethodExecution))
 			return false;
 		
 		MethodExecution other = (MethodExecution) object;
 		return Arrays.equals(other.argumentValues, argumentValues) && other.returnValue == returnValue;
+	}
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = prime + Arrays.hashCode(argumentValues);
+		result = prime * result + ((returnValue == null) ? 0 : returnValue.hashCode());
+		return result;
 	}
 }

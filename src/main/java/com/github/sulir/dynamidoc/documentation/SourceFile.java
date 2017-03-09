@@ -65,6 +65,10 @@ public class SourceFile {
 		return methods.get(getMethodDeclarationAt(line));
 	}
 	
+	public String toString() {
+		return path;
+	}
+	
 	CompilationUnit getCompilationUnit() {
 		return unit;
 	}

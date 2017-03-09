@@ -2,7 +2,6 @@ package com.github.sulir.dynamidoc.documentation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +15,7 @@ public class Method {
 	private static final String EXAMPLES_TAG = "@examples";
 	
 	private final MethodDeclaration declaration;
-	private final Map<MethodExecution, Integer> executions = new HashMap<>();
+	private final Map<MethodExecution, MethodExecution> executions = new HashMap<>();
 	
 	public Method(SourceFile file, int line) {
 		this.declaration = file.getMethodDeclarationAt(line);
@@ -42,29 +41,24 @@ public class Method {
 	}
 	
 	public void addExecution(MethodExecution execution) {
-		Integer count = executions.get(execution);
-		executions.put(execution, (count == null) ? 1 : count + 1);
+		if (executions.containsKey(execution))
+			executions.get(execution).incrementCount();
+		else
+			executions.put(execution, execution);
 	}
 	
-	public String generateDocumentation() {
-		return "";
+	public String[] generateDocumentation() {
+		ExampleSelector selector = new ExampleSelector(executions.values());
+		selector.sort();
+		
+		return selector.getTop(5).stream()
+				.map(MethodExecution::generateDocumentation)
+				.filter(e -> !e.isEmpty())
+				.toArray(String[]::new);
 	}
 	
 	public String generateJavadoc() {
-		Iterator<MethodExecution> executionSet = executions.keySet().iterator();
-		StringBuilder result = new StringBuilder();
-		
-		while (executionSet.hasNext()) {
-			String sentence = executionSet.next().generateDocumentation();
-			
-			if (!sentence.isEmpty())
-				result.append(sentence);
-			
-			if (executionSet.hasNext())
-				result.append("<br>\n    ");
-		}
-		
-		return result.toString();
+		return String.join("<br>\n    ", generateDocumentation());
 	}
 	
 	@SuppressWarnings("unchecked")
