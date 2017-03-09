@@ -54,7 +54,7 @@ public class TraceEvent {
 			return "'" + ((((char) object) == '\0') ? "\\0" : object) + "'";
 		else if (object instanceof String)
 			return "\"" + ((String) object).replace("\0", "\\0") + "\"";
-		else if (object.getClass().isArray())
+		else if (object instanceof Object[])
 			return Arrays.deepToString((Object[]) object);
 		else
 			return object.toString();
