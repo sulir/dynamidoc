@@ -15,8 +15,9 @@ import com.github.sulir.dynamidoc.tracing.TraceEvent;
 public class MethodTracer {
 	private Trace trace = new Trace();
 	
-	@Pointcut("execution(* *(..)) && !within(com.github.sulir.dynamidoc..*)"
-			+ " && !cflow(execution(* toString(..)))")
+	@Pointcut("execution(* *(..))"
+			+ "&& !within(com.github.sulir.dynamidoc..*) && !cflow(execution(* toString(..)))"
+			+ "&& !within(is(AnonymousType)) && !execution(synthetic * *(..))")
 	public void method() {}
 	
 	@Around("method()")
