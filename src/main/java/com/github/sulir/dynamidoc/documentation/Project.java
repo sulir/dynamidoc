@@ -14,10 +14,6 @@ import com.github.sulir.dynamidoc.tracing.TraceEvent;
 public class Project {
 	private final String path;
 	private final Map<String, SourceFile> sourceFiles = new HashMap<>();
-
-	public Project () throws FileNotFoundException {
-		this(System.getProperty("dynamidoc.source.path"));
-	}
 	
 	public Project(String path) throws FileNotFoundException {
 		if (path != null && Files.isDirectory(Paths.get(path)))
@@ -62,7 +58,6 @@ public class Project {
 	public void writeJavadoc() {
 		for (SourceFile file : sourceFiles.values()) {
 			try {
-				System.out.println("write " + file.getPath());
 				file.writeJavadoc();
 			} catch (IOException e) {
 				Logger.getGlobal().warning("Cannot write " + file.getPath());

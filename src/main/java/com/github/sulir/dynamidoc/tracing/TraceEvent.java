@@ -1,11 +1,14 @@
 package com.github.sulir.dynamidoc.tracing;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.aspectj.lang.Signature;
 import org.aspectj.lang.reflect.SourceLocation;
 
-public class TraceEvent {
+public class TraceEvent implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private final String file;
 	private final int line;
 	private final String[] arguments;
