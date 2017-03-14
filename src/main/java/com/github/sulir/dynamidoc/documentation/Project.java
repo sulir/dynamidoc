@@ -3,6 +3,7 @@ package com.github.sulir.dynamidoc.documentation;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.HashMap;
@@ -12,24 +13,32 @@ import java.util.logging.Logger;
 import com.github.sulir.dynamidoc.tracing.TraceEvent;
 
 public class Project {
-	private final String path;
+	private final String[] paths;
 	private final Map<String, SourceFile> sourceFiles = new HashMap<>();
 	
-	public Project(String path) throws FileNotFoundException {
-		if (path != null && Files.isDirectory(Paths.get(path)))
-			this.path = path;
-		else
-			throw new FileNotFoundException("Invalid source path: " + path);
+	public Project(String[] paths) {
+		this.paths = paths;
 	}
 	
-	public String getPath() {
-		return path;
+	public String[] getPaths() {
+		return paths;
 	}
 	
 	public void addSourceFile(SourceFile file) {
 		sourceFiles.put(file.getPath(), file);
 	}
 
+	public Path findFile(String path) throws FileNotFoundException {
+		for (String projectPath : paths) {
+			Path found = Paths.get(projectPath, path).toAbsolutePath();
+			
+			if (Files.isRegularFile(found))
+				return found;
+		}
+		
+		throw new FileNotFoundException("Cannot find " + path);
+	}
+	
 	public void addTraceEvents(Collection<TraceEvent> events) {
 		for (TraceEvent event : events) {
 			try {

@@ -3,7 +3,6 @@ package com.github.sulir.dynamidoc.documentation;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.NavigableMap;
@@ -21,8 +20,8 @@ import org.eclipse.jface.text.BadLocationException;
 import org.eclipse.jface.text.Document;
 
 public class SourceFile {
-	private final Project project;
-	private final String path;
+	private final String relativePath;
+	private final Path absolutePath;
 	private final NavigableMap<Integer, MethodDeclaration> methodDeclarations = new TreeMap<>();
 	private final Map<MethodDeclaration, Method> methods = new HashMap<>();
 	private CompilationUnit unit;
@@ -31,17 +30,17 @@ public class SourceFile {
 	private static final String JAVADOC_END = "*/";
 	
 	public SourceFile(Project project, String path) throws IOException {
-		this.project = project;
-		this.path = path;
+		this.relativePath = path;
+		this.absolutePath = project.findFile(path);
 		parse();
 	}
 
 	public String getPath() {
-		return path;
+		return relativePath;
 	}
 	
 	public Path getAbsolutePath() {
-		return Paths.get(project.getPath(), path).toAbsolutePath();
+		return absolutePath;
 	}
 	
 	public void addMethod(Method method) {
@@ -56,7 +55,7 @@ public class SourceFile {
 		try {
 			unit.rewrite(document, null).apply(document);
 			String code = fixJavadocFormatting();
-			Files.write(getAbsolutePath(), code.getBytes());
+			Files.write(absolutePath, code.getBytes());
 		} catch (BadLocationException e) {
 			throw new IOException("Cannot write Javadoc", e);
 		}
@@ -67,7 +66,7 @@ public class SourceFile {
 	}
 	
 	public String toString() {
-		return path;
+		return relativePath;
 	}
 	
 	CompilationUnit getCompilationUnit() {
@@ -83,7 +82,7 @@ public class SourceFile {
 	}
 	
 	private void parse() throws IOException {
-		String content = new String(Files.readAllBytes(getAbsolutePath()));
+		String content = new String(Files.readAllBytes(absolutePath));
 		document = new Document(content);
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
