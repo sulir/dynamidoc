@@ -95,7 +95,17 @@ public class MethodExecution {
 			return false;
 		
 		MethodExecution other = (MethodExecution) object;
-		return Arrays.equals(other.argumentValues, argumentValues) && other.returnValue == returnValue;
+		
+		if (!Arrays.equals(argumentValues, other.argumentValues))
+			return false;
+		
+		if (returnValue == null) {
+			if (other.returnValue != null)
+				return false;
+		} else if (!returnValue.equals(other.returnValue))
+			return false;
+		
+		return true;
 	}
 	
 	@Override

@@ -18,7 +18,7 @@ public class Method {
 	private final Map<MethodExecution, MethodExecution> executions = new HashMap<>();
 	
 	public Method(SourceFile file, int line) {
-		this.declaration = file.getMethodDeclarationAt(line);
+		declaration = file.getMethodDeclarationAt(line);
 	}
 
 	public String getName() {
