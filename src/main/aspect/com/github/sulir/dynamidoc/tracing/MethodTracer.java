@@ -1,11 +1,11 @@
 package com.github.sulir.dynamidoc.tracing;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.annotation.SuppressAjWarnings;
+import org.aspectj.lang.reflect.MethodSignature;
 import org.aspectj.lang.reflect.SourceLocation;
 
 @Aspect
@@ -26,14 +26,17 @@ public class MethodTracer {
 	@Around("loggedMethod()")
 	@SuppressAjWarnings("adviceDidNotMatch")
 	public Object traceMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-		Signature signature = joinPoint.getSignature();
+		MethodSignature signature = (MethodSignature) joinPoint.getSignature();
 		SourceLocation location = joinPoint.getSourceLocation();
 		Object[] arguments = joinPoint.getArgs();
 		TraceEvent event = new TraceEvent(location, signature, arguments);
 		
 		try {
 			Object returnValue = joinPoint.proceed();
-			event.setReturnValue(returnValue);
+			
+			if (!signature.getReturnType().equals(Void.TYPE))
+				event.setReturnValue(returnValue);
+			
 			return returnValue;
 		} catch (Throwable exception) {
 			event.setException(exception);
