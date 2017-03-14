@@ -11,6 +11,7 @@ import java.util.TreeMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.dom.AST;
 import org.eclipse.jdt.core.dom.ASTParser;
 import org.eclipse.jdt.core.dom.ASTVisitor;
@@ -86,7 +87,12 @@ public class SourceFile {
 		document = new Document(content);
 		
 		ASTParser parser = ASTParser.newParser(AST.JLS8);
+		Map<String, String> options = JavaCore.getOptions();
+		options.put(JavaCore.COMPILER_COMPLIANCE, JavaCore.VERSION_1_8);
+		options.put(JavaCore.COMPILER_SOURCE, JavaCore.VERSION_1_8);
+		parser.setCompilerOptions(options);
 		parser.setSource(content.toCharArray());
+		
 		unit = (CompilationUnit) parser.createAST(null);
 		unit.recordModifications();
 		
