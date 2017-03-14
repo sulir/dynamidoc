@@ -8,19 +8,22 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.aspectj.lang.annotation.SuppressAjWarnings;
 import org.aspectj.lang.reflect.SourceLocation;
 
-import com.github.sulir.dynamidoc.tracing.Trace;
-import com.github.sulir.dynamidoc.tracing.TraceEvent;
-
 @Aspect
 public class MethodTracer {
 	private Trace trace = new Trace();
 	
-	@Pointcut("execution(* *(..))"
-			+ "&& !within(com.github.sulir.dynamidoc..*) && !cflow(execution(* toString(..)))"
-			+ "&& !within(is(AnonymousType)) && !execution(synthetic * *(..))")
-	public void method() {}
+	@Pointcut("execution(synthetic * *(..)) || "
+			+ "(within(is(EnumType)) && (execution(* values()) || execution(* valueOf(String))))")
+	void withoutSource() {}
+
+	@Pointcut("within(com.github.sulir.dynamidoc..*) || cflow(execution(* toString()))")
+	void infiniteRecursion() {}
 	
-	@Around("method()")
+	@Pointcut("execution(* *(..)) && !withoutSource() && !infiniteRecursion() && "
+			+ "!within(is(AnonymousType))")
+	void loggedMethod() {}
+	
+	@Around("loggedMethod()")
 	@SuppressAjWarnings("adviceDidNotMatch")
 	public Object traceMethod(ProceedingJoinPoint joinPoint) throws Throwable {
 		Signature signature = joinPoint.getSignature();
