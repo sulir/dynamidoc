@@ -58,9 +58,10 @@ public class TraceEvent implements Serializable {
 				return "'" + ((((char) object) == '\0') ? "\\0" : object) + "'";
 			else if (object instanceof String)
 				return "\"" + ((String) object).replace("\0", "\\0") + "\"";
-			else if (object instanceof Object[])
-				return Arrays.deepToString((Object[]) object);
-			else
+			else if (object.getClass().isArray()) {
+				String converted = Arrays.deepToString(new Object[] {object});
+				return converted.substring(1, converted.length() - 1);
+			} else
 				return object.toString();
 		} catch (NullPointerException e) {
 			return "a NullPointerException-throwing object";
