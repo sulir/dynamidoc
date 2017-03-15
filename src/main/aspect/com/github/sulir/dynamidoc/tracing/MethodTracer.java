@@ -19,8 +19,11 @@ public class MethodTracer {
 	@Pointcut("within(com.github.sulir.dynamidoc..*) || cflow(execution(* toString()))")
 	void infiniteRecursion() {}
 	
+	@Pointcut("within(*..*Test || *..*TestCase || *..*TestSuite)")
+	void test() {}
+	
 	@Pointcut("execution(* *(..)) && !withoutSource() && !infiniteRecursion() && "
-			+ "!within(is(AnonymousType))")
+			+ "!test() && !within(is(AnonymousType))")
 	void loggedMethod() {}
 	
 	@Around("loggedMethod()")
