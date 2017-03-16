@@ -16,7 +16,7 @@ public class MethodTracer {
 			+ "(within(is(EnumType)) && (execution(* values()) || execution(* valueOf(String))))")
 	void withoutSource() {}
 
-	@Pointcut("within(com.github.sulir.dynamidoc..*) || cflow(execution(* toString()))")
+	@Pointcut("within(com.github.sulir.dynamidoc..*) || cflow(call(* toString()))")
 	void infiniteRecursion() {}
 	
 	@Pointcut("within(*..*Test || *..*TestCase || *..*TestSuite)")
@@ -33,8 +33,9 @@ public class MethodTracer {
 		SourceLocation location = joinPoint.getSourceLocation();
 		Object[] arguments = joinPoint.getArgs();
 		TraceEvent event = new TraceEvent(location, signature, arguments);
-		
+
 		try {
+			event.setStateBefore(joinPoint.getThis());
 			Object returnValue = joinPoint.proceed();
 			
 			if (!signature.getReturnType().equals(Void.TYPE))
@@ -45,6 +46,7 @@ public class MethodTracer {
 			event.setException(exception);
 			throw exception;
 		} finally {
+			event.setStateAfter(joinPoint.getThis());
 			trace.record(event);
 		}
 	}

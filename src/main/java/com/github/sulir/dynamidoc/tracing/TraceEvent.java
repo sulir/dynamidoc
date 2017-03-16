@@ -14,6 +14,8 @@ public class TraceEvent implements Serializable {
 	private final String[] arguments;
 	private String returnValue;
 	private String exception;
+	private String stateBefore;
+	private String stateAfter;
 	
 	public TraceEvent(SourceLocation location, Signature signature, Object[] arguments) {
 		String packageName = signature.getDeclaringType().getPackage().getName();
@@ -49,6 +51,24 @@ public class TraceEvent implements Serializable {
 	public void setException(Throwable exception) {
 		this.exception = exception.toString();
 	}
+	
+	public String getStateBefore() {
+		return stateBefore;
+	}
+
+	public void setStateBefore(Object stateBefore) {
+		if (stateBefore != null)
+			this.stateBefore = objectToString(stateBefore);
+	}
+
+	public String getStateAfter() {
+		return stateAfter;
+	}
+
+	public void setStateAfter(Object stateAfter) {
+		if (stateAfter != null)
+			this.stateAfter = objectToString(stateAfter);
+	}
 
 	private String objectToString(Object object) {
 		try {
@@ -63,8 +83,8 @@ public class TraceEvent implements Serializable {
 				return converted.substring(1, converted.length() - 1);
 			} else
 				return object.toString();
-		} catch (NullPointerException e) {
-			return "a NullPointerException-throwing object";
+		} catch (Exception e) {
+			return "an Exception-throwing object";
 		}
 	}
 }

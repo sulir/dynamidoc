@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.eclipse.jdt.core.dom.Javadoc;
 import org.eclipse.jdt.core.dom.MethodDeclaration;
+import org.eclipse.jdt.core.dom.Modifier;
 import org.eclipse.jdt.core.dom.SingleVariableDeclaration;
 import org.eclipse.jdt.core.dom.TagElement;
 import org.eclipse.jdt.core.dom.TextElement;
@@ -45,6 +46,18 @@ public class Method {
 			executions.get(execution).incrementCount();
 		else
 			executions.put(execution, execution);
+	}
+
+	public boolean isStatic() {
+		return Modifier.isStatic(declaration.getModifiers());
+	}
+	
+	public boolean hasParameters() {
+		return !declaration.parameters().isEmpty();
+	}
+	
+	public boolean isVoid() {
+		return getReturnType().equals(Void.TYPE);
 	}
 	
 	public String[] generateDocumentation() {

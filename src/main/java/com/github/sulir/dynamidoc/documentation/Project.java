@@ -57,6 +57,8 @@ public class Project {
 				MethodExecution execution = new MethodExecution(method, event.getArguments());
 				execution.setReturnValue(event.getReturnValue());
 				execution.setException(event.getException());
+				execution.setStateBefore(event.getStateBefore());
+				execution.setStateAfter(event.getStateAfter());
 				method.addExecution(execution);
 			} catch (IOException e) {
 				Logger.getGlobal().warning("Cannot read " + event.getFile());
